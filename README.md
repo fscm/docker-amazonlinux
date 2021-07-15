@@ -8,7 +8,7 @@ usually are installed on a regular Amazon Linux image.
 
 ## Supported tags
 
-* `8`, `latest`
+* `2`, `latest`
 
 ## What is Amazon Linux ?
 
