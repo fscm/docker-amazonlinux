@@ -42,7 +42,7 @@ RUN \
     rpm --root "${__BUILD_DIR__}" --initdb && \
     rpm --root "${__BUILD_DIR__}" --import "/etc/pki/rpm-gpg/RPM-GPG-KEY-${OS_CODENAME}" && \
     rpm --root "${__BUILD_DIR__}" --install --nodeps --noscripts "${__WORK_DIR__}"/system-release*.rpm && \
-    yum --assumeyes --quiet --installroot="${__BUILD_DIR__}" --setopt=tsflags='nodocs' --setopt=override_install_langs="en_US.utf8" install \
+    yum --assumeyes --quiet --disablerepo='*' --enablerepo='amzn2-core' --installroot="${__BUILD_DIR__}" --setopt=tsflags='nodocs' --setopt=override_install_langs="en_US.utf8" install \
         bash \
         coreutils \
         yum \
