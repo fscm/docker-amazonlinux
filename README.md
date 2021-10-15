@@ -8,7 +8,9 @@ usually are installed on a regular Amazon Linux image.
 
 ## Supported tags
 
-* `2`, `latest`
+- [`2`][latest], [`latest`][latest]
+
+[latest]: https://github.com/fscm/docker-amazonlinux/blob/master/amazonlinux2/Dockerfile
 
 ## What is Amazon Linux ?
 
@@ -51,7 +53,7 @@ available, see the [tags on this repository](https://github.com/fscm/docker-amaz
 
 ## Authors
 
-* **Frederico Martins** - [fscm](https://github.com/fscm)
+- **Frederico Martins** - [fscm](https://github.com/fscm)
 
 See also the list of [contributors](https://github.com/fscm/docker-amazonlinux/contributors)
 who participated in this project.
