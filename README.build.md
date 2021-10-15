@@ -30,7 +30,7 @@ In order to create a Docker image using this Dockerfiles you need to
 run the `docker` command with a few options.
 
 ```shell
-docker image build --force-rm --no-cache --file <VARIANT>/Dockerfile --tag <USER>/<IMAGE>:<TAG> <PATH>
+docker image build --force-rm --no-cache --progress plain --file <VARIANT>/Dockerfile --tag <USER>/<IMAGE>:<TAG> <PATH>
 ```
 
 - `<USER>` - *[required]* The user that will own the container image (e.g.: "johndoe").

@@ -1,6 +1,6 @@
 # global args
 ARG __BUILD_DIR__="/build"
-ARG OS_VERSION="2.0.20210715"
+ARG OS_VERSION="2.0.20211001"
 
 
 
@@ -24,20 +24,20 @@ WORKDIR "${__WORK_DIR__}"
 
 RUN \
 # build env
-    echo '=== setting build env ===' && \
+    echo '--> setting build env' && \
     set +h && \
 # import rpm key
-    echo '=== import rpm keys ===' && \
+    echo '--> import rpm keys' && \
     rpm --import "/etc/pki/rpm-gpg/RPM-GPG-KEY-${OS_CODENAME}" && \
 # dependencies
-    echo '=== instaling dependencies ===' && \
+    echo '--> instaling dependencies' && \
     yum --assumeyes --quiet install \
         yum-utils && \
 # build structure
-    echo '=== creating build structure ===' && \
+    echo '--> creating build structure' && \
     install --directory --owner="${__USER__}" --group="${__USER__}" --mode=0755 "${__BUILD_DIR__}" && \
 # build first stage
-    echo '=== building first stage ===' && \
+    echo '--> building first stage' && \
     yumdownloader --assumeyes --quiet --arch="$(arch)" --destdir="${__WORK_DIR__}" system-release && \
     rpm --root "${__BUILD_DIR__}" --initdb && \
     rpm --root "${__BUILD_DIR__}" --import "/etc/pki/rpm-gpg/RPM-GPG-KEY-${OS_CODENAME}" && \
@@ -49,7 +49,7 @@ RUN \
         yum-plugin-ovl \
         yum-plugin-priorities && \
 # clean up and tweaks...
-    echo '=== system settings and tweaks ===' && \
+    echo '--> system settings and tweaks' && \
     sed -i -e '/distroverpkg=system-release/a exclude=*.i?86\noverride_install_langs=en_US.utf8\ntsflags=nodocs' "${__BUILD_DIR__}/etc/yum.conf" && \
     rm -rf "${__BUILD_DIR__}/usr/share/info"/* && \
     rm -rf "${__BUILD_DIR__}/usr/share/man"/* && \
@@ -67,14 +67,14 @@ RUN \
     find "${__BUILD_DIR__}/usr/share/doc" -mindepth 1 -type d -empty -delete && \
     find "${__BUILD_DIR__}/var/cache" -type f -delete && \
 # copy tests
-    echo '=== copying test files ===' && \
+    echo '--> copying test files' && \
     install --owner="${__USER__}" --group="${__USER__}" --mode=0755 --target-directory="${__BUILD_DIR__}/usr/bin" "${__WORK_DIR__}/tests"/* && \
 # check version
-    echo '=== os version ===' && \
+    echo '--> os version' && \
     cat "${__BUILD_DIR__}/etc/system-release"* && \
     rpm --root "${__BUILD_DIR__}" --query --queryformat='%{VERSION}\n' system-release && \
 # done
-  echo '=== all done! ==='
+  echo '--> all done!'
 
 
 
