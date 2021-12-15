@@ -1,6 +1,6 @@
 # global args
 ARG __BUILD_DIR__="/build"
-ARG OS_VERSION="2.0.20211001"
+ARG OS_VERSION="2.0.20211215"
 
 
 
@@ -13,8 +13,8 @@ ARG __USER__="root"
 ARG __WORK_DIR__="/root"
 
 ENV \
-  LANG="POSIX" \
-  LC_ALL="POSIX"
+    LANG="POSIX" \
+    LC_ALL="POSIX"
 
 USER ${__USER__}
 
@@ -23,16 +23,15 @@ COPY "files/" "${__WORK_DIR__}/"
 WORKDIR "${__WORK_DIR__}"
 
 RUN \
-# build env
-    echo '--> setting build env' && \
-    set +h && \
 # import rpm key
     echo '--> import rpm keys' && \
     rpm --import "/etc/pki/rpm-gpg/RPM-GPG-KEY-${OS_CODENAME}" && \
 # dependencies
     echo '--> instaling dependencies' && \
+    yum --quiet makecache && \
     yum --assumeyes --quiet install \
-        yum-utils && \
+        yum-utils \
+        > /dev/null && \
 # build structure
     echo '--> creating build structure' && \
     install --directory --owner="${__USER__}" --group="${__USER__}" --mode=0755 "${__BUILD_DIR__}" && \
@@ -47,13 +46,17 @@ RUN \
         coreutils \
         yum \
         yum-plugin-ovl \
-        yum-plugin-priorities && \
+        yum-plugin-priorities \
+        > /dev/null && \
 # clean up and tweaks...
     echo '--> system settings and tweaks' && \
     sed -i -e '/distroverpkg=system-release/a exclude=*.i?86\noverride_install_langs=en_US.utf8\ntsflags=nodocs' "${__BUILD_DIR__}/etc/yum.conf" && \
+    echo 'container' > "${__BUILD_DIR__}/etc/yum/vars/infra" && \
+    :> "${__BUILD_DIR__}/etc/machine-id" && \
     rm -rf "${__BUILD_DIR__}/usr/share/info"/* && \
     rm -rf "${__BUILD_DIR__}/usr/share/man"/* && \
     rm -rf "${__BUILD_DIR__}/var/cache/yum"/* && \
+    rm -rf "${__BUILD_DIR__}/var/lib/yum"/history.* && \
     rm -rf "${__BUILD_DIR__}/var/log"/* && \
     rm -rf "${__BUILD_DIR__}/sbin/sln" && \
     rm -rf "${__BUILD_DIR__}/dev"/.??* && \
@@ -63,6 +66,8 @@ RUN \
     rm -rf "${__BUILD_DIR__}/boot" && \
     rm -rf "${__BUILD_DIR__}/proc" && \
     rm -rf "${__BUILD_DIR__}/sys" && \
+    find "${__BUILD_DIR__}/usr/share/i18n/locales" -mindepth 1 -maxdepth 1 -not -name 'en_US' -exec rm -r {} + && \
+    find "${__BUILD_DIR__}/usr/share/locale" -mindepth 1 -maxdepth 1 -type d -not \( -name 'en' -o -name 'en_US' -o -name 'locale.alias' \) -exec rm -r {} + && \
     find "${__BUILD_DIR__}/usr/share/doc" -mindepth 1 -not -type d -not \( -name 'COPYING*' -o -name 'GPL' -o -name '*LICENSE*' \) -delete && \
     find "${__BUILD_DIR__}/usr/share/doc" -mindepth 1 -type d -empty -delete && \
     find "${__BUILD_DIR__}/var/cache" -type f -delete && \
@@ -73,8 +78,9 @@ RUN \
     echo '--> os version' && \
     cat "${__BUILD_DIR__}/etc/system-release"* && \
     rpm --root "${__BUILD_DIR__}" --query --queryformat='%{VERSION}\n' system-release && \
+    arch && \
 # done
-  echo '--> all done!'
+    echo '--> all done!'
 
 
 
